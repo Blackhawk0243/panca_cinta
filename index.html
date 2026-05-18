@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akademi Panca Cinta - Simulasi Expert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            color: #f8fafc;
+            /* Cegah user menyeleksi teks agar terasa seperti game */
+            user-select: none; 
+        }
+
+        h1, h2, h3, .font-heading {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .hologram-border {
+            position: relative;
+        }
+        .hologram-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #10b981, #3b82f6);
+            z-index: -1;
+            border-radius: inherit;
+            background-size: 400%;
+            animation: holoFlow 8s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .hologram-border:hover::before, .node-active::before {
+            opacity: 1;
+        }
+
+        @keyframes holoFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Status & Item Styles */
+        .node-completed { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; border: 1px solid #10b981;}
+        .node-active { cursor: pointer; transform: scale(1); transition: all 0.3s; }
+        .node-active:hover { transform: scale(1.03) translateY(-5px); }
+
+        .selected-item {
+            border-color: #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* Reading Box */
+        .reading-box {
+            background: rgba(15, 23, 42, 0.8);
+            border-left: 4px solid #3b82f6;
+            padding: 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            user-select: text; /* Allow reading selection */
+        }
+        
+        /* Responsiveness Tweaks */
+        html, body {
+            overflow: hidden; /* Prevent body scrolling */
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile browsers */
+        }
+    </style>
+</head>
+
+<body class="h-full w-full flex flex-col items-center justify-center p-0 sm:p-2 md:p-4 bg-slate-950">
+
+    <div class="w-full h-full max-w-7xl flex flex-col lg:flex-row gap-0 sm:gap-4 relative sm:rounded-3xl overflow-hidden">
+        
+        <!-- Sidebar Kiri: Sistem Status -->
+        <aside class="glass-panel w-full lg:w-80 p-6 flex flex-col gap-6 hidden lg:flex z-30 shrink-0 sm:rounded-3xl h-full overflow-y-auto" id="hud-sidebar">
+            <div class="text-center border-b border-slate-700/50 pb-6 shrink-0">
+                <div class="w-20 h-20 mx-auto bg-slate-800 rounded-full border-2 border-sky-500 mb-4 flex items-center justify-center">
+                    <i class="fas fa-user-graduate text-3xl text-sky-400"></i>
+                </div>
+                <h1 class="text-2xl font-bold font-heading text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">Akademi Panca Cinta</h1>
+                <div class="mt-1 text-sm text-slate-400 font-medium">Ujian Akhir</div>
+            </div>
+
+            <!-- KBC Stats -->
+            <div class="flex-1 min-h-[200px]">
+                <h3 class="text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest"><i class="fas fa-radar mr-2"></i>Parameter KBC</h3>
+                <div class="space-y-4" id="kbc-stats-container">
+                    <!-- Progress bar dirender via JS -->
+                </div>
+            </div>
+
+            <!-- Badges -->
+            <div class="shrink-0">
+                <h3 class="text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest"><i class="fas fa-award mr-2"></i>Lencana Utama</h3>
+                <div class="grid grid-cols-5 gap-2 lg:gap-3" id="badges-container">
+                    <!-- Badges dirender via JS -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Area Konten Utama -->
+        <main class="glass-panel flex-1 relative flex flex-col shadow-2xl border-0 sm:border border-slate-700/50 sm:rounded-3xl h-full w-full overflow-hidden" id="game-screen">
+            <!-- Mobile Header -->
+            <div class="lg:hidden flex justify-between items-center p-4 border-b border-slate-700/50 bg-slate-900/90 backdrop-blur-md z-40 shrink-0 shadow-md sticky top-0">
+                <h1 class="font-bold font-heading text-sky-400 text-lg flex items-center gap-2">
+                    <i class="fas fa-graduation-cap"></i> Panca Cinta
+                </h1>
+                <button onclick="toggleMobileHUD()" class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700 transition shadow-inner border border-slate-700">
+                    <i class="fas fa-chart-pie"></i>
+                </button>
+            </div>
+
+            <!-- Kontainer Render Dinamis -->
+            <div id="dynamic-content" class="flex-1 w-full h-full p-4 sm:p-6 md:p-8 overflow-y-auto relative scroll-smooth pb-20 sm:pb-8">
+                <!-- Konten Menu/Misi masuk ke sini -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Interaktif -->
+    <div id="message-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 md:p-8 max-w-lg w-full text-center animate-slide-up shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden max-h-[90vh] overflow-y-auto">
+            <!-- Dekorasi Modal -->
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+            
+            <div id="modal-icon" class="text-6xl mb-6 drop-shadow-lg">🔔</div>
+            <h2 id="modal-title" class="text-2xl font-bold font-heading text-white mb-3">Pesan Sistem</h2>
+            <div id="modal-desc" class="text-slate-300 mb-8 text-sm md:text-base leading-relaxed">Deskripsi pesan di sini.</div>
+            
+            <div class="flex gap-4 justify-center" id="modal-actions">
+                <button onclick="closeModal()" class="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg">
+                    Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA SYSTEM ---
+        let player = {
+            kbc: {
+                kritis: 0,
+                kreatif: 0,
+                komunikatif: 0,
+                kolaboratif: 0
+            },
+            badges: {
+                diri: { earned: false, icon: 'fa-user-shield', color: 'text-pink-400', name: 'Manajer Diri' },
+                tuhan: { earned: false, icon: 'fa-scale-balanced', color: 'text-purple-400', name: 'Integritas Berita' },
+                sesama: { earned: false, icon: 'fa-people-group', color: 'text-orange-400', name: 'Pemimpin Kolaborasi' },
+                alam: { earned: false, icon: 'fa-earth-asia', color: 'text-green-400', name: 'Insinyur Alam' },
+                bangsa: { earned: false, icon: 'fa-monument', color: 'text-red-400', name: 'Pemecah Sandi' }
+            }
+        };
+
+        const quests = {
+            diri: { id: 'diri', title: 'Logika Jadwal 24 Jam', desc: 'Gunakan penalaran deduktif untuk menyusun jadwal harian yang seimbang berdasarkan 4 aturan ketat.', icon: 'fa-clock', border: 'border-pink-500/50' },
+            tuhan: { id: 'tuhan', title: 'Investigasi Hoaks', desc: 'Sebuah pesan berantai menyebar di sekolah. Terapkan prinsip Tabayyun untuk menelusuri fakta kebenarannya.', icon: 'fa-search', border: 'border-purple-500/50' },
+            sesama: { id: 'sesama', title: 'Manajemen Tim Panti', desc: 'Analisis profil 4 temanmu dan delegasikan tugas kepanitiaan bakti sosial sesuai keahlian mereka.', icon: 'fa-handshake', border: 'border-orange-500/50' },
+            alam: { id: 'alam', title: 'Perakitan Biopori', desc: 'Halaman sekolah banjir! Temukan kombinasi 3 alat & bahan yang tepat dari gudang untuk membuat lubang resapan.', icon: 'fa-seedling', border: 'border-green-500/50' },
+            bangsa: { id: 'bangsa', title: 'Kriptografi Merah Putih', desc: 'Pecahkan sandi rahasia peninggalan pendiri sekolah untuk membuka tema festival perayaan kemerdekaan.', icon: 'fa-key', border: 'border-red-500/50' }
+        };
+
+        const dynamicContent = document.getElementById('dynamic-content');
+        let selectedItemForPuzzle = null; // Variable global untuk puzzle drag/drop (klik & klik)
+
+        // --- CORE FUNCTIONS ---
+        window.onload = () => {
+            showModal('Selamat Datang, Siswa Kelas 6!', 
+                'Ini adalah <b>Ujian Akhir Akademi Panca Cinta</b>.<br><br>Kamu harus menyelesaikan 5 simulasi kasus yang menguji kemampuan Bernalar Kritis, Kreatif, Komunikatif, dan Kolaboratif (KBC).<br><br>Baca setiap petunjuk dengan sangat teliti. Waktu pengerjaan sekitar 45 menit. Siapkan alat tulis jika perlu untuk mencatat petunjuk logika.', 
+                '🏫', initGame);
+        };
+
+        function initGame() {
+            updateHUD();
+            renderMap();
+        }
+
+        function updateHUD() {
+            // Update KBC (Maksimal 100 per stat untuk visual)
+            const kbcContainer = document.getElementById('kbc-stats-container');
+            kbcContainer.innerHTML = '';
+            const labels = {
+                kritis: { name: 'Bernalar Kritis', color: 'bg-sky-500', icon: 'fa-brain' },
+                kreatif: { name: 'Kreatif', color: 'bg-purple-500', icon: 'fa-lightbulb' },
+                komunikatif: { name: 'Komunikatif', color: 'bg-yellow-500', icon: 'fa-comments' },
+                kolaboratif: { name: 'Kolaboratif', color: 'bg-green-500', icon: 'fa-users-gear' }
+            };
+
+            for (const [key, val] of Object.entries(player.kbc)) {
+                let percent = Math.min(val, 100);
+                kbcContainer.innerHTML += `
+                    <div class="group">
+                        <div class="flex justify-between text-xs mb-1.5">
+                            <span class="text-slate-300 font-medium"><i class="fas ${labels[key].icon} mr-1.5 opacity-70"></i>${labels[key].name}</span>
+                            <span class="font-bold text-white">${val} PT</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2.5 shadow-inner overflow-hidden border border-slate-700">
+                            <div class="${labels[key].color} h-full rounded-full transition-all duration-1000 relative" style="width: ${percent}%">
+                                <div class="absolute inset-0 bg-white/20 w-full h-full" style="background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent); background-size: 1rem 1rem;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Update Badges
+            const badgesContainer = document.getElementById('badges-container');
+            badgesContainer.innerHTML = '';
+            for (const [key, badge] of Object.entries(player.badges)) {
+                const activeClasses = badge.earned ? 'bg-slate-800 border-sky-400 drop-shadow-[0_0_10px_rgba(56,189,248,0.5)]' : 'bg-slate-900 border-slate-700 opacity-30 grayscale';
+                const iconClasses = badge.earned ? badge.color : 'text-slate-500';
+                badgesContainer.innerHTML += `
+                    <div class="relative group cursor-help aspect-square rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${activeClasses}" title="${badge.name}">
+                        <i class="fas ${badge.icon} ${iconClasses} text-xl"></i>
+                        <!-- Tooltip -->
+                        <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-2 py-1 bg-slate-800 text-xs rounded opacity-0 group-hover:opacity-100 transition pointer-events-none border border-slate-600 z-50">
+                            ${badge.name}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showModal(title, desc, icon = '🔔', callback = null, customButtons = null) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerHTML = desc;
+            document.getElementById('modal-icon').innerText = icon;
+            
+            const actions = document.getElementById('modal-actions');
+            if (customButtons) {
+                actions.innerHTML = customButtons;
+            } else {
+                actions.innerHTML = `
+                    <button id="modal-default-btn" class="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg">
+                        Mengerti
+                    </button>`;
+            }
+
+            const modal = document.getElementById('message-modal');
+            modal.classList.remove('hidden');
+            
+            // Setup listener for default button if it exists
+            const defaultBtn = document.getElementById('modal-default-btn');
+            if(defaultBtn) {
+                defaultBtn.onclick = () => {
+                    closeModal();
+                    if(callback) callback();
+                };
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('message-modal').classList.add('hidden');
+        }
+
+        function toggleMobileHUD() {
+            const sidebar = document.getElementById('hud-sidebar');
+            if(sidebar.classList.contains('hidden')) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('absolute', 'inset-0', 'z-50', 'bg-slate-900/95', 'backdrop-blur-xl', 'rounded-none', 'sm:rounded-3xl', 'animate-fade-in');
+                // Add close button for mobile
+                if(!document.getElementById('close-mobile-hud')) {
+                     sidebar.insertAdjacentHTML('afterbegin', `
+                        <button id="close-mobile-hud" onclick="toggleMobileHUD()" class="absolute top-4 right-4 w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center lg:hidden text-white border border-slate-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `);
+                }
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('absolute', 'inset-0', 'z-50', 'bg-slate-900/95', 'backdrop-blur-xl', 'rounded-none', 'sm:rounded-3xl', 'animate-fade-in');
+            }
+        }
+
+        function renderMap() {
+            // Cek Menang
+            const earnedCount = Object.values(player.badges).filter(b => b.earned).length;
+            if (earnedCount === 5) {
+                renderVictory();
+                return;
+            }
+
+            let html = `
+                <div class="animate-fade-in flex flex-col h-full">
+                    <div class="mb-6 md:mb-8 text-center sm:text-left mt-2 sm:mt-0">
+                        <h2 class="text-2xl md:text-3xl font-bold font-heading text-white">Pusat Analisis</h2>
+                        <p class="text-slate-400 mt-2 text-xs sm:text-sm max-w-2xl mx-auto sm:mx-0">Pilih modul ujian. Setiap modul membutuhkan ketelitian membaca dan logika penalaran. Selesaikan kelima simulasi untuk lulus.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 pb-10">
+            `;
+
+            for(const [id, q] of Object.entries(quests)) {
+                const isEarned = player.badges[id].earned;
+                const stateClass = isEarned ? 'node-completed' : 'node-active hologram-border bg-slate-800/80';
+                const btnText = isEarned ? '<i class="fas fa-check text-emerald-400 mr-2"></i>Tuntas' : 'Mulai Analisis <i class="fas fa-arrow-right ml-2 text-sm"></i>';
+                const btnClass = isEarned ? 'bg-slate-800 text-slate-500' : 'bg-white text-slate-900 hover:bg-sky-50';
+
+                html += `
+                    <div class="rounded-2xl p-5 md:p-6 flex flex-col h-full border ${q.border} ${stateClass} relative group">
+                        ${isEarned ? '<div class="absolute inset-0 bg-slate-900/60 rounded-2xl z-10 flex items-center justify-center backdrop-blur-[1px]"><i class="fas fa-lock text-4xl text-emerald-500/50"></i></div>' : ''}
+                        
+                        <div class="flex items-center gap-4 mb-3 md:mb-4">
+                            <div class="w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-2xl bg-slate-900 flex items-center justify-center border border-slate-700 shadow-inner group-hover:scale-110 transition-transform">
+                                <i class="fas ${q.icon} text-xl md:text-2xl text-white"></i>
+                            </div>
+                            <h3 class="font-bold font-heading text-base md:text-lg text-white leading-tight">${q.title}</h3>
+                        </div>
+                        <p class="text-xs md:text-sm text-slate-300 mb-6 flex-1 leading-relaxed">${q.desc}</p>
+                        <button onclick="${isEarned ? '' : `startQuest('${id}')`}" class="w-full py-3 rounded-xl font-bold transition-colors shadow-lg ${btnClass} z-20 relative text-sm md:text-base">
+                            ${btnText}
+                        </button>
+                    </div>
+                `;
+            }
+
+            html += `</div></div>`;
+            dynamicContent.innerHTML = html;
+        }
+
+        function startQuest(id) {
+            if(id === 'diri') initQuestDiri();
+            if(id === 'tuhan') initQuestTuhan();
+            if(id === 'sesama') initQuestSesama();
+            if(id === 'alam') initQuestAlam();
+            if(id === 'bangsa') initQuestBangsa();
+        }
+
+        function completeQuest(id, scoreReward, detailMsg) {
+            player.badges[id].earned = true;
+            for(let key in scoreReward) {
+                player.kbc[key] += scoreReward[key];
+            }
+            updateHUD();
+            showModal('Misi Selesai!', `<b>Hebat!</b> ${detailMsg}<br><br>Lencana <b>${player.badges[id].name}</b> berhasil diamankan.`, '🌟', renderMap);
+        }
+
+        function renderHeader(title, icon) {
+            return `
+                <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 pb-4 sm:pb-6 border-b border-slate-700/50 sticky top-0 bg-slate-900/80 backdrop-blur-md z-30 pt-2 sm:pt-0 -mx-4 px-4 sm:mx-0 sm:px-0">
+                    <button onclick="renderMap()" class="w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition"><i class="fas fa-arrow-left"></i></button>
+                    <div>
+                        <h2 class="text-lg sm:text-2xl font-bold font-heading truncate"><i class="fas ${icon} mr-2 sm:mr-3 text-sky-400"></i>${title}</h2>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Konsep: Sudoku/Einstein Riddle sederhana. Mencocokkan 5 Aktivitas ke 5 Slot Waktu.
+        let q1_slots = [null, null, null, null, null];
+        const q1_activities = [
+            { id: 'ibadah', name: 'Ibadah & Doa', icon: 'fa-hands-praying', color: 'text-purple-400' },
+            { id: 'belajar', name: 'Belajar Fokus', icon: 'fa-book-open', color: 'text-blue-400' },
+            { id: 'istirahat', name: 'Istirahat / Tidur', icon: 'fa-bed', color: 'text-indigo-400' },
+            { id: 'olahraga', name: 'Olahraga Sore', icon: 'fa-running', color: 'text-green-400' },
+            { id: 'main', name: 'Waktu Bebas / Game', icon: 'fa-gamepad', color: 'text-pink-400' }
+        ];
+
+        function initQuestDiri() {
+            q1_slots = [null, null, null, null, null];
+            selectedItemForPuzzle = null;
+            renderQuestDiri();
+        }
+
+        function renderQuestDiri() {
+            let html = `
+                <div class="animate-fade-in max-w-4xl mx-auto h-full flex flex-col">
+                    ${renderHeader('Logika Jadwal', 'fa-clock')}
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 flex-1">
+                        <div class="lg:col-span-1 flex flex-col gap-4">
+                            <div class="reading-box shadow-lg text-sm sm:text-base">
+                                <h3 class="font-bold text-white mb-2"><i class="fas fa-scroll mr-2"></i>Aturan Pengaturan:</h3>
+                                <p class="mb-2">Susun 5 kegiatan ke dalam urutan Waktu 1 hingga 5 berdasarkan petunjuk berikut:</p>
+                                <ul class="list-decimal pl-4 space-y-1 text-slate-300">
+                                    <li><b>Waktu Bebas / Game</b> harus di urutan paling akhir.</li>
+                                    <li><b>Olahraga</b> harus tepat setelah <b>Istirahat</b>.</li>
+                                    <li><b>Belajar Fokus</b> tidak boleh di Waktu 1 maupun Waktu 4.</li>
+                                    <li><b>Ibadah</b> harus dilakukan pertama kali.</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-slate-800 p-4 sm:p-5 rounded-2xl border border-slate-700 shadow-inner">
+                                <h3 class="font-bold text-xs sm:text-sm text-slate-400 mb-3 uppercase tracking-widest text-center">Pilih Kegiatan</h3>
+                                <div class="grid grid-cols-2 lg:grid-cols-1 gap-2" id="q1-pool">
+            `;
+
+            // Render available activities
+            q1_activities.forEach(act => {
+                // cek apakah sudah dipakai di slot
+                const isUsed = q1_slots.includes(act.id);
+                if(!isUsed) {
+                    const isSelected = selectedItemForPuzzle === act.id ? 'selected-item' : 'border-slate-600 hover:bg-slate-700 cursor-pointer';
+                    html += `
+                        <div onclick="q1_select('${act.id}')" class="p-2 sm:p-3 rounded-xl border-2 flex items-center gap-2 transition bg-slate-900 ${isSelected}">
+                            <i class="fas ${act.icon} ${act.color} text-lg sm:text-xl w-6 sm:w-8 text-center shrink-0"></i>
+                            <span class="font-medium text-xs sm:text-sm leading-tight">${act.name}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            html += `
+                                </div>
+                                <p class="text-[10px] sm:text-xs text-center text-slate-500 mt-4"><i class="fas fa-info-circle"></i> Klik kegiatan, lalu klik slot waktu.</p>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 flex flex-col h-full">
+                            <div class="bg-slate-800/50 p-4 sm:p-6 rounded-3xl border border-slate-700 flex-1 flex flex-col min-h-[350px]">
+                                <h3 class="font-bold text-lg sm:text-xl text-white mb-4 sm:mb-6 text-center">Urutan Waktu Harian</h3>
+                                <div class="flex flex-col gap-2 sm:gap-3 flex-1 justify-center">
+            `;
+
+            // Render Slots
+            for(let i=0; i<5; i++) {
+                const actId = q1_slots[i];
+                const act = actId ? q1_activities.find(a => a.id === actId) : null;
+                
+                html += `
+                    <div onclick="q1_place(${i})" class="h-12 sm:h-16 rounded-xl border-2 border-dashed ${act ? 'border-sky-500 bg-sky-900/30' : 'border-slate-600 hover:border-slate-400'} flex items-center px-3 sm:px-4 cursor-pointer transition relative overflow-hidden group">
+                        <div class="w-10 sm:w-12 text-slate-500 font-bold font-heading text-sm sm:text-base">W${i+1}</div>
+                        <div class="flex-1 flex items-center gap-2 sm:gap-3 justify-center">
+                            ${act ? `<i class="fas ${act.icon} ${act.color} text-lg sm:text-xl"></i><span class="font-bold text-white text-xs sm:text-base truncate">${act.name}</span>` : '<span class="text-slate-500 text-xs sm:text-sm">Kosong</span>'}
+                        </div>
+                        ${act ? `<button onclick="event.stopPropagation(); q1_remove(${i})" class="absolute right-2 sm:right-4 text-slate-400 hover:text-red-400 transition w-8 h-8 flex items-center justify-center bg-slate-800/80 rounded-full backdrop-blur-sm"><i class="fas fa-times"></i></button>` : ''}
+                    </div>
+                `;
+            }
+
+            html += `
+                                </div>
+                                <button onclick="q1_verify()" class="mt-6 w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 sm:py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base">
+                                    <i class="fas fa-check-double"></i> Verifikasi Jadwal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            dynamicContent.innerHTML = html;
+        }
+
+        function q1_select(id) { selectedItemForPuzzle = id; renderQuestDiri(); }
+        function q1_remove(index) { q1_slots[index] = null; renderQuestDiri(); }
+        function q1_place(index) {
+            if(selectedItemForPuzzle) {
+                // Kalo slot udah isi, tuker aja atau timpa (untuk kemudahan, timpa)
+                const existing = q1_slots[index];
+                if(existing) {
+                    // lepaskan yg lama
+                }
+                q1_slots[index] = selectedItemForPuzzle;
+                selectedItemForPuzzle = null;
+                renderQuestDiri();
+            }
+        }
+        function q1_verify() {
+            if(q1_slots.includes(null)) {
+                showModal('Jadwal Belum Lengkap', 'Isi semua 5 Waktu sebelum memverifikasi jadwal.', '⏳');
+                return;
+            }
+            
+            // Logic Check:
+            // 1. Waktu Bebas di [4]
+            // 2. Olahraga tepat setelah Istirahat (Istirahat[x], Olahraga[x+1])
+            // 3. Belajar bukan di [0] dan bukan di [3]
+            // 4. Ibadah di [0]
+
+            let errors = [];
+            if(q1_slots[4] !== 'main') errors.push("Waktu bebas tidak berada di akhir jadwal.");
+            if(q1_slots[0] !== 'ibadah') errors.push("Ibadah tidak dijadikan prioritas pertama.");
+            if(q1_slots[0] === 'belajar' || q1_slots[3] === 'belajar') errors.push("Penempatan waktu belajar melanggar aturan.");
+            
+            let idxIstirahat = q1_slots.indexOf('istirahat');
+            let idxOlahraga = q1_slots.indexOf('olahraga');
+            if(idxOlahraga !== idxIstirahat + 1) errors.push("Olahraga tidak dilakukan tepat setelah istirahat.");
+
+            if(errors.length === 0) {
+                completeQuest('diri', { kritis: 25, kreatif: 10 }, 'Kamu berhasil mengatur jadwal yang seimbang secara deduktif!');
+            } else {
+                showModal('Analisis Logika Gagal', `Jadwal tidak sesuai petunjuk:<br><br><ul class="text-left text-sm list-disc pl-5 text-red-300">${errors.map(e=>`<li>${e}</li>`).join('')}</ul><br>Baca kembali aturan di layar kiri!`, '❌');
+            }
+        }
+
+        let q2_step = 0;
+        let q2_errors = 0;
+
+        function initQuestTuhan() {
+            q2_step = 0;
+            q2_errors = 0;
+            renderQuestTuhan();
+        }
+
+        function renderQuestTuhan() {
+            const steps = [
+                {
+                    dialogue: "Kamu melihat pesan di Grup Kelas dari nomor tak dikenal:<br><br><i>'PENGUMUMAN PENTING! Besok sekolah libur 3 hari karena guru-guru akan rapat mendadak keluar kota. Tolong sebarkan ke semua kelas segera!!'</i>",
+                    choices: [
+                        { text: "Langsung forward ke grup ekskul dan teman-teman lain biar mereka senang.", correct: false, reason: "Menyebarkan informasi tanpa verifikasi adalah awal mula hoaks. Kamu kehilangan poin kritis." },
+                        { text: "Diam saja dan mengabaikannya.", correct: false, reason: "Sikap apatis tidak menyelesaikan masalah. Teman lain mungkin akan percaya hoaks tersebut." },
+                        { text: "Mengecek kalender akademik di website resmi sekolah.", correct: true }
+                    ]
+                },
+                {
+                    dialogue: "Di website sekolah, kalender akademik menunjukkan besok adalah hari efektif biasa. Tidak ada jadwal rapat yang tertulis. Apa langkahmu selanjutnya?",
+                    choices: [
+                        { text: "Marah-marah di grup dan memaki nomor tak dikenal tersebut.", correct: false, reason: "Amarah hanya memperkeruh suasana dan tidak mencerminkan sikap komunikatif yang baik." },
+                        { text: "Menghubungi Wali Kelas secara pribadi (Japri) untuk mengonfirmasi ulang informasi tersebut.", correct: true },
+                        { text: "Membuat pengumuman sendiri di grup bahwa besok tetap masuk.", correct: false, reason: "Meski niatmu baik, kamu bukan otoritas resmi. Lebih baik verifikasi ke guru dulu." }
+                    ]
+                },
+                {
+                    dialogue: "Wali Kelas membalas: <i>'Itu berita bohong (Hoaks), Nak. Besok kita tetap masuk seperti biasa. Terima kasih sudah bertanya.'</i><br><br>Sekarang, bagaimana kamu menyampaikan ini ke grup kelas?",
+                    choices: [
+                        { text: "Mengirim tangkapan layar (screenshot) chat dengan guru ke grup, disertakan pesan sopan agar teman-teman tidak terhasut hoaks.", correct: true },
+                        { text: "Meminta guru saja yang memberitahu di grup, kamu tidak mau ikut campur.", correct: false, reason: "Kurang inisiatif kolaboratif. Kamu sudah tahu faktanya, bantulah meluruskan dengan sopan." }
+                    ]
+                }
+            ];
+
+            if(q2_step >= steps.length) {
+                // Finish
+                let score = q2_errors === 0 ? 30 : 15;
+                completeQuest('tuhan', { kritis: score, komunikatif: score/2 }, `Kamu berhasil menerapkan prinsip Tabayyun (mencari kebenaran) dengan sangat runut dan menyetop penyebaran hoaks.`);
+                return;
+            }
+
+            const current = steps[q2_step];
+
+            let html = `
+                <div class="animate-fade-in max-w-3xl mx-auto h-full flex flex-col">
+                    ${renderHeader('Investigasi Hoaks', 'fa-search')}
+                    
+                    <div class="flex-1 flex flex-col gap-6 justify-center max-w-2xl mx-auto w-full">
+                        <div class="bg-slate-800 p-5 md:p-8 rounded-3xl border border-slate-600 relative shadow-2xl mt-4">
+                            <div class="absolute -top-6 -left-2 sm:-top-6 sm:-left-6 w-12 h-12 sm:w-14 sm:h-14 bg-purple-600 rounded-full flex items-center justify-center text-xl shadow-lg border-4 border-slate-900"><i class="fas fa-mobile-alt"></i></div>
+                            <p class="text-sm sm:text-lg text-slate-200 leading-relaxed">${current.dialogue}</p>
+                        </div>
+
+                        <div class="flex flex-col gap-3 mt-2 sm:mt-4">
+                            <p class="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest text-center mb-1 sm:mb-2">Tindakanmu Selanjutnya:</p>
+            `;
+
+            current.choices.forEach((c, idx) => {
+                html += `
+                    <button onclick="q2_answer(${idx})" class="text-left bg-slate-900 hover:bg-slate-700 p-4 rounded-2xl border border-slate-700 hover:border-purple-500 transition-all transform hover:scale-[1.01] flex gap-3 sm:gap-4 items-center group shadow-md">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-slate-600 group-hover:border-purple-400 flex items-center justify-center shrink-0 bg-slate-800"><i class="fas fa-chevron-right text-slate-600 group-hover:text-purple-400 text-xs sm:text-sm"></i></div>
+                        <span class="text-slate-300 group-hover:text-white text-xs sm:text-base leading-snug">${c.text}</span>
+                    </button>
+                `;
+            });
+
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            dynamicContent.innerHTML = html;
+        }
+
+        function q2_answer(choiceIdx) {
+            // Evaluasi di state manual (kurang ideal karena regenerasi html hilang, jadi simpan di array local scope)
+            // wait, we can just hardcode check here based on q2_step.
+            const steps = [
+                { choices: [{c:false},{c:false},{c:true}] },
+                { choices: [{c:false},{c:true},{c:false}] },
+                { choices: [{c:true},{c:false}] }
+            ];
+            
+            const isCorrect = steps[q2_step].choices[choiceIdx].c;
+            
+            if(isCorrect) {
+                q2_step++;
+                renderQuestTuhan();
+            } else {
+                q2_errors++;
+                // Kasih feedback yang spesifik, tapi karena kita hardcode check, kita ambil alasannya dari re-define.
+                const reasons = [
+                    ["Tindakan terburu-buru menyebar info tanpa verifikasi (hoaks).", "Sikap apatis membiarkan masalah."],
+                    ["Amarah tidak solutif.", "", "Kamu bukan otoritas resmi."],
+                    ["", "Kurang inisiatif kolaboratif."]
+                ];
+                showModal('Analisis Kurang Tepat', reasons[q2_step][choiceIdx] + '<br>Pikirkan kembali dampaknya dan coba pilih langkah yang lebih bijak.', '⚠️');
+            }
+        }
+
+        const q3_roles = [
+            { id: 'ketua', name: 'Koor. Lapangan', desc: 'Membutuhkan orang yang tegas, terorganisir, dan berani bicara di depan umum.', icon: 'fa-bullhorn' },
+            { id: 'humas', name: 'Humas & Komunikasi', desc: 'Membutuhkan orang yang ramah, pandai merangkai kata, dan sabar.', icon: 'fa-comments' },
+            { id: 'kreatif', name: 'Desain & Dokumentasi', desc: 'Membutuhkan orang dengan imajinasi visual dan kemampuan teknis alat.', icon: 'fa-camera' },
+            { id: 'logistik', name: 'Logistik & Data', desc: 'Membutuhkan orang yang teliti, kritis terhadap angka, dan rapi.', icon: 'fa-clipboard-list' }
+        ];
+
+        let q3_answers = { 'ketua': null, 'humas': null, 'kreatif': null, 'logistik': null };
+
+        function initQuestSesama() {
+            q3_answers = { 'ketua': null, 'humas': null, 'kreatif': null, 'logistik': null };
+            renderQuestSesama();
+        }
+
+        function renderQuestSesama() {
+            let html = `
+                <div class="animate-fade-in max-w-5xl mx-auto h-full flex flex-col">
+                    ${renderHeader('Manajemen Kolaborasi', 'fa-users-gear')}
+                    
+                    <p class="text-slate-300 mb-4 sm:mb-6 bg-slate-800/50 p-4 rounded-xl border border-slate-700 text-xs sm:text-sm leading-relaxed"><b>Misi:</b> Panti Asuhan "Harapan" mengadakan pentas seni. Delegasikan 4 temanmu ke posisi yang tepat menggunakan dropdown. Satu anak = Satu tugas.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 flex-1 overflow-y-auto min-h-[300px]">
+            `;
+
+            const chars = [
+                { id: 'c1', name: 'Budi', profile: 'Sangat teliti, sering memenangkan lomba matematika, tapi pendiam dan kurang suka tampil.' },
+                { id: 'c2', name: 'Siti', profile: 'Pandai melukis, hobi fotografi pakai HP-nya, sering punya ide out-of-the-box.' },
+                { id: 'c3', name: 'Edo', profile: 'Ketua kelas yang tegas, suaranya lantang, dan selalu bisa menenangkan teman yang ribut.' },
+                { id: 'c4', name: 'Lani', profile: 'Murah senyum, sangat sabar, aktif di ekskul jurnalistik dan suka menulis puisi.' }
+            ];
+
+            const roleOptionsHTML = chars.map(c => `<option value="${c.id}" class="bg-slate-800 text-white">${c.name}</option>`).join('');
+
+            q3_roles.forEach(role => {
+                const currentVal = q3_answers[role.id] || '';
+                html += `
+                    <div class="bg-slate-900 border border-slate-700 p-4 sm:p-5 rounded-2xl flex flex-col justify-between group hover:border-orange-500/50 transition shadow-md">
+                        <div class="mb-4">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-orange-900/50 flex items-center justify-center text-orange-400 shrink-0"><i class="fas ${role.icon} text-sm sm:text-base"></i></div>
+                                <h3 class="font-bold text-sm sm:text-lg text-white leading-tight">${role.name}</h3>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-400 line-clamp-2 sm:line-clamp-none">${role.desc}</p>
+                        </div>
+                        
+                        <div class="mt-auto relative">
+                            <select onchange="q3_update('${role.id}', this.value)" class="w-full bg-slate-800 border-2 border-slate-600 text-white rounded-xl p-3 text-xs sm:text-sm appearance-none focus:outline-none focus:border-orange-500 cursor-pointer">
+                                <option value="" disabled ${currentVal === '' ? 'selected' : ''}>-- Tugaskan Seseorang --</option>
+                                ${chars.map(c => `<option value="${c.id}" ${currentVal === c.id ? 'selected' : ''} class="bg-slate-800">${c.name}</option>`).join('')}
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs sm:text-base"></i>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    
+                    <div class="mt-4 sm:mt-6 bg-slate-800 p-4 sm:p-5 rounded-2xl border border-slate-700 shrink-0">
+                        <h4 class="font-bold text-white mb-2 sm:mb-3 text-xs sm:text-sm uppercase flex items-center"><i class="fas fa-book-open mr-2 text-sky-400"></i>Profil Kandidat</h4>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+                            ${chars.map(c => `
+                                <div class="text-[10px] sm:text-xs bg-slate-900 p-2 sm:p-3 rounded-lg border border-slate-700/50 hover:border-slate-500 transition">
+                                    <div class="font-bold text-sky-400 mb-1 border-b border-slate-700 pb-1">${c.name}</div>
+                                    <div class="text-slate-400 leading-snug line-clamp-3 sm:line-clamp-none">${c.profile}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <button onclick="q3_verify()" class="mt-4 sm:mt-6 w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 sm:py-4 rounded-xl transition shadow-lg text-sm sm:text-base shrink-0">
+                        <i class="fas fa-check-circle mr-2"></i>Konfirmasi Penugasan
+                    </button>
+                </div>
+            `;
+            dynamicContent.innerHTML = html;
+        }
+
+        function q3_update(roleId, val) {
+            q3_answers[roleId] = val;
+            // Cegah duplikasi secara visual (opsional, tapi biarkan player yang mikir)
+        }
+
+        function q3_verify() {
+            const vals = Object.values(q3_answers);
+            if(vals.includes(null) || vals.includes('')) {
+                showModal('Belum Selesai', 'Tugaskan semua peran sebelum konfirmasi.', '⚠️');
+                return;
+            }
+
+            const uniqueVals = new Set(vals);
+            if(uniqueVals.size < 4) {
+                showModal('Overload Tugas!', 'Satu anak hanya boleh memegang 1 peran. Jangan serakah membebani satu anak dengan banyak tugas!', '🛑');
+                return;
+            }
+
+            // Kunci Jawaban: Ketua = Edo (c3), Humas = Lani (c4), Kreatif = Siti (c2), Logistik = Budi (c1)
+            let errors = 0;
+            if(q3_answers['ketua'] !== 'c3') errors++;
+            if(q3_answers['humas'] !== 'c4') errors++;
+            if(q3_answers['kreatif'] !== 'c2') errors++;
+            if(q3_answers['logistik'] !== 'c1') errors++;
+
+            if(errors === 0) {
+                completeQuest('sesama', { kolaboratif: 30, komunikatif: 15 }, 'Analisis SDM-mu sempurna! Acara akan berjalan lancar karena dikerjakan oleh ahlinya.');
+            } else {
+                showModal('Ketidakcocokan Tim', 'Ada anggota yang ditempatkan tidak sesuai dengan keahlian dominannya. Baca kembali profil mereka (Buku Catatan di bawah) dan cocokkan dengan deskripsi tugas.', '📉');
+            }
+        }
+
+        let q4_selected = [];
+        const q4_items = [
+            { id: 'botol', name: 'Botol Plastik Kecil', icon: 'fa-bottle-water' },
+            { id: 'pipa', name: 'Pipa Paralon Berlubang', icon: 'fa-grip-lines-vertical' }, // Correct
+            { id: 'kaca', name: 'Pecahan Kaca', icon: 'fa-wine-glass' },
+            { id: 'organik', name: 'Sampah Daun/Sayur', icon: 'fa-leaf' }, // Correct
+            { id: 'bor', name: 'Alat Bor Tanah', icon: 'fa-screwdriver' }, // Correct
+            { id: 'semen', name: 'Semen & Pasir', icon: 'fa-trowel' },
+            { id: 'kabel', name: 'Kabel Tembaga', icon: 'fa-plug' },
+            { id: 'baterai', name: 'Baterai Bekas', icon: 'fa-battery-quarter' },
+            { id: 'lem', name: 'Lem Super', icon: 'fa-fill-drip' }
+        ];
+
+        function initQuestAlam() {
+            q4_selected = [];
+            renderQuestAlam();
+        }
+
+        function renderQuestAlam() {
+            let html = `
+                <div class="animate-fade-in max-w-4xl mx-auto h-full flex flex-col">
+                    ${renderHeader('Insinyur Lingkungan', 'fa-earth-asia')}
+                    
+                    <div class="reading-box shadow-lg mb-4 sm:mb-6 text-xs sm:text-sm md:text-base">
+                        <p class="mb-2"><b>Laporan Kasus:</b> Halaman sekolah tergenang air. Kamu diutus membuat <b>Lubang Resapan Biopori</b>.</p>
+                        <p><b>Cara Kerja:</b> Membuat lubang dalam di tanah, memasukkan selongsong berlubang penahan tanah, lalu mengisinya dengan pakan cacing agar tanah gembur alami.</p>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-3 sm:mb-4 bg-slate-800 p-3 rounded-xl border border-slate-700">
+                        <h3 class="font-bold text-white uppercase tracking-wider text-xs sm:text-sm flex items-center"><i class="fas fa-box-open mr-2 text-green-400"></i>Gudang</h3>
+                        <div class="text-xs sm:text-sm px-3 py-1 bg-slate-900 rounded-lg border border-slate-600">Terpilih: <b class="${q4_selected.length === 3 ? 'text-green-400' : 'text-sky-400'}">${q4_selected.length}/3</b> Bahan</div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 flex-1 content-start overflow-y-auto pb-4">
+            `;
+
+            q4_items.forEach(item => {
+                const isSelected = q4_selected.includes(item.id);
+                const selectClass = isSelected ? 'bg-green-900/40 border-green-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-slate-800 border-slate-700 hover:border-slate-500 hover:bg-slate-700 cursor-pointer';
+                
+                html += `
+                    <div onclick="q4_toggle('${item.id}')" class="rounded-xl border-2 p-3 sm:p-4 md:p-5 flex flex-col items-center justify-center text-center transition-all ${selectClass} relative overflow-hidden group h-28 sm:h-36">
+                        ${isSelected ? '<div class="absolute top-2 right-2 text-green-400 text-sm sm:text-base"><i class="fas fa-check-circle"></i></div>' : ''}
+                        <i class="fas ${item.icon} text-2xl sm:text-3xl md:text-4xl text-slate-400 group-hover:text-white transition-colors mb-2 sm:mb-3 ${isSelected ? 'text-green-300' : ''}"></i>
+                        <span class="font-medium text-[10px] sm:text-xs md:text-sm text-slate-300 group-hover:text-white leading-tight">${item.name}</span>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <button onclick="q4_verify()" class="mt-4 sm:mt-6 w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 sm:py-4 rounded-xl transition shadow-lg shrink-0 text-sm sm:text-base ${q4_selected.length !== 3 ? 'opacity-50 cursor-not-allowed' : ''}">
+                        <i class="fas fa-hammer mr-2"></i>Mulai Perakitan
+                    </button>
+                </div>
+            `;
+            dynamicContent.innerHTML = html;
+        }
+
+        function q4_toggle(id) {
+            if(q4_selected.includes(id)) {
+                q4_selected = q4_selected.filter(x => x !== id);
+            } else {
+                if(q4_selected.length < 3) q4_selected.push(id);
+            }
+            renderQuestAlam();
+        }
+
+        function q4_verify() {
+            if(q4_selected.length !== 3) return;
+
+            const correct = ['pipa', 'bor', 'organik'];
+            const isMatch = q4_selected.every(id => correct.includes(id));
+
+            if(isMatch) {
+                completeQuest('alam', { kreatif: 25, kritis: 15 }, 'Rancangan Biopori-mu berhasil dibuat! Tanah sekolah akan subur dan bebas banjir.');
+            } else {
+                // Beri hint berdasarkan kesalahan
+                let hint = "";
+                if(q4_selected.includes('semen') || q4_selected.includes('kaca')) hint = "Bahan keras atau tajam akan merusak lingkungan dan menghalangi resapan air.";
+                else if(q4_selected.includes('botol')) hint = "Botol plastik tanpa modifikasi/lubang samping tidak akan membiarkan air menyerap ke tanah.";
+                else if(!q4_selected.includes('bor')) hint = "Bagaimana caramu membuat lubang vertikal sedalam 1 meter ke tanah keras tanpa alat bantu yang tepat?";
+                else if(!q4_selected.includes('organik')) hint = "Apa yang akan menarik cacing tanah datang untuk menggemburkan tanah?";
+                
+                showModal('Eksperimen Gagal', `Kombinasi bahan kurang tepat.<br><br><i>Analisis Sistem:</i> ${hint}`, '🔬');
+            }
+        }
+
+        function initQuestBangsa() {
+            renderQuestBangsa();
+        }
+
+        function renderQuestBangsa() {
+            let html = `
+                <div class="animate-fade-in max-w-2xl mx-auto h-full flex flex-col">
+                    ${renderHeader('Kriptografi Sejarah', 'fa-monument')}
+                    
+                    <div class="bg-slate-800 p-4 sm:p-6 rounded-3xl border border-red-900/50 shadow-2xl relative overflow-hidden mb-4 sm:mb-6 flex-1 flex flex-col justify-center">
+                        <!-- Watermark -->
+                        <i class="fas fa-shield-halved absolute -right-4 -bottom-4 sm:-right-10 sm:-bottom-10 text-6xl sm:text-9xl text-slate-700/20"></i>
+                        
+                        <p class="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed mb-4 sm:mb-6 relative z-10 bg-slate-900/80 p-4 rounded-xl">Kamu menemukan gulungan kertas "Sandi Kemerdekaan". Petunjuk: <br><br>
+                        <i class="text-red-300 font-bold block bg-red-900/20 p-2 rounded border border-red-900/50 mt-2">"Setiap huruf melangkah mundur satu langkah. B adalah A. C adalah B."</i></p>
+                        
+                        <div class="bg-black/60 p-4 sm:p-6 rounded-xl font-mono text-center mb-6 border border-slate-600 relative z-10">
+                            <h3 class="text-[10px] sm:text-xs text-slate-500 uppercase mb-2 tracking-wider">Teks Terenkripsi:</h3>
+                            <div class="text-lg sm:text-2xl md:text-3xl text-emerald-400 tracking-widest break-words leading-relaxed" id="q5-cipher">
+                                C I J O O F L B &nbsp; <br class="sm:hidden">U V O H H B M &nbsp; J L B
+                            </div>
+                        </div>
+
+                        <div class="relative z-10">
+                            <label class="block text-xs sm:text-sm font-bold text-slate-400 mb-2">Masukkan Terjemahan:</label>
+                            <input type="text" id="q5-input" autocomplete="off" class="w-full bg-slate-900 border-2 border-slate-600 text-white rounded-xl p-3 sm:p-4 text-center font-bold uppercase tracking-widest focus:outline-none focus:border-red-500 transition shadow-inner text-sm sm:text-base" placeholder="KETIK JAWABAN...">
+                        </div>
+                    </div>
+
+                    <div class="mt-auto flex flex-col sm:flex-row gap-3 sm:gap-4 shrink-0">
+                        <button onclick="q5_hint()" class="w-full sm:flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 sm:py-4 rounded-xl transition border border-slate-600 text-xs sm:text-sm"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i> Petunjuk (-5 Kritis)</button>
+                        <button onclick="q5_verify()" class="w-full sm:flex-[2] bg-red-600 hover:bg-red-700 text-white font-bold py-3 sm:py-4 rounded-xl transition shadow-lg text-sm sm:text-lg uppercase tracking-wider">Dekripsi Teks</button>
+                    </div>
+                </div>
+            `;
+            dynamicContent.innerHTML = html;
+        }
+
+        function q5_hint() {
+            if(player.kbc.kritis >= 5) {
+                player.kbc.kritis -= 5;
+                updateHUD();
+                showModal('Petunjuk Dekripsi', 'Coba tulis huruf alfabet A sampai Z di atas kertas.<br><br>Huruf sandi: <b>C</b> -> Mundur satu huruf sebelum C adalah <b>B</b>.<br>Huruf sandi: <b>I</b> -> Mundur satu huruf sebelum I adalah <b>H</b>.<br><br>Lanjutkan!', '💡');
+            } else {
+                showModal('Poin Tidak Cukup', 'Kamu butuh minimal 5 Poin Bernalar Kritis untuk menggunakan petunjuk ini.', '🚫');
+            }
+        }
+
+        function q5_verify() {
+            const input = document.getElementById('q5-input').value.toUpperCase().replace(/\s+/g, '').trim();
+            // Jawaban asli: BHINNEKA TUNGGAL IKA (Terenkripsi shift +1: CIJOOFLB UVOHHBM JLB)
+            const target = "BHINNEKATUNGGALIKA";
+
+            if(input === target) {
+                completeQuest('bangsa', { kritis: 20, kreatif: 10 }, 'Sandi berhasil dipecahkan! Semboyan pemersatu bangsa menjadi tema festival kita tahun ini.');
+            } else {
+                showModal('Dekripsi Gagal', 'Sistem menolak kata sandi tersebut. Coba periksa kembali coretan pergeseran hurufmu.', '❌');
+            }
+        }
+
+        function renderVictory() {
+            let totalScore = player.kbc.kritis + player.kbc.kreatif + player.kbc.komunikatif + player.kbc.kolaboratif;
+            
+            let html = `
+                <div class="animate-slide-up flex flex-col items-center justify-center min-h-full text-center relative z-10 p-2 sm:p-4 py-10">
+                    <!-- Confetti Vibe -->
+                    <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+                        <div class="absolute w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky-500/20 via-slate-900/0 to-transparent"></div>
+                    </div>
+
+                    <div class="w-24 h-24 sm:w-32 sm:h-32 bg-slate-800 rounded-full border-4 border-yellow-400 flex items-center justify-center mb-4 sm:mb-6 shadow-[0_0_50px_rgba(250,204,21,0.5)] z-20 shrink-0">
+                        <i class="fas fa-graduation-cap text-4xl sm:text-6xl text-yellow-400 drop-shadow-lg"></i>
+                    </div>
+                    
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black font-heading text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-emerald-400 to-yellow-400 mb-3 sm:mb-4 z-20 drop-shadow-sm leading-tight">Kelulusan Paripurna!</h1>
+                    
+                    <p class="text-xs sm:text-sm md:text-lg text-slate-300 max-w-2xl mb-6 sm:mb-8 z-20 bg-slate-900/80 p-4 rounded-xl border border-slate-700/50 backdrop-blur-sm leading-relaxed">
+                        Luar biasa! Kamu telah membuktikan kapasitasmu mengamalkan <b>Panca Cinta</b> dengan kemampuan kognitif tingkat tinggi (KBC). Sekolah bangga memilikimu sebagai lulusan terbaik.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-10 w-full max-w-3xl z-20 shrink-0">
+                        <div class="bg-slate-800/90 backdrop-blur-md p-3 sm:p-5 rounded-2xl border-b-4 border-sky-500 shadow-lg flex flex-col items-center justify-center">
+                            <div class="text-sky-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-1"><i class="fas fa-brain mr-1"></i>Kritis</div>
+                            <div class="text-3xl sm:text-4xl text-white font-black font-heading">${player.kbc.kritis}</div>
+                        </div>
+                        <div class="bg-slate-800/90 backdrop-blur-md p-3 sm:p-5 rounded-2xl border-b-4 border-purple-500 shadow-lg flex flex-col items-center justify-center">
+                            <div class="text-purple-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-1"><i class="fas fa-lightbulb mr-1"></i>Kreatif</div>
+                            <div class="text-3xl sm:text-4xl text-white font-black font-heading">${player.kbc.kreatif}</div>
+                        </div>
+                        <div class="bg-slate-800/90 backdrop-blur-md p-3 sm:p-5 rounded-2xl border-b-4 border-yellow-500 shadow-lg flex flex-col items-center justify-center">
+                            <div class="text-yellow-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-1"><i class="fas fa-comments mr-1"></i>Komunikatif</div>
+                            <div class="text-3xl sm:text-4xl text-white font-black font-heading">${player.kbc.komunikatif}</div>
+                        </div>
+                        <div class="bg-slate-800/90 backdrop-blur-md p-3 sm:p-5 rounded-2xl border-b-4 border-green-500 shadow-lg flex flex-col items-center justify-center">
+                            <div class="text-green-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-1"><i class="fas fa-users mr-1"></i>Kolaboratif</div>
+                            <div class="text-3xl sm:text-4xl text-white font-black font-heading">${player.kbc.kolaboratif}</div>
+                        </div>
+                    </div>
+
+                    <button onclick="location.reload()" class="z-20 bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-10 rounded-full hover:scale-105 transition-transform shadow-[0_0_20px_rgba(56,189,248,0.4)] text-sm sm:text-lg border border-sky-400 shrink-0">
+                        <i class="fas fa-rotate-right mr-2"></i> Mulai Simulasi Baru
+                    </button>
+                </div>
+            `;
+            dynamicContent.innerHTML = html;
+        }
+
+    </script>
+</body>
+</html>
