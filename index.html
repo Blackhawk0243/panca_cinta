@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akademi Panca Cinta: Proyek Akhir Tahun</title>
+    <title>Akademi Panca Cinta: Proyek Akhir</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -19,19 +19,24 @@
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Custom Checkbox */
-        .check-item { transition: all 0.2s; cursor: pointer; }
-        .check-item.selected { background-color: #dcfce7; border-color: #22c55e; }
-        
-        /* Responsiveness */
-        @media (max-width: 768px) {
-            .mission-nav { flex-wrap: wrap; justify-content: center; }
-            .mission-btn { width: 45%; margin: 5px; text-align: center; }
-        }
-
-        /* Styling specifically for the 10-item lists */
+        /* Custom Selects & Lists */
         .compact-list div { padding: 0.5rem; margin-bottom: 0.25rem; }
-        .compact-select { padding: 0.25rem; font-size: 0.875rem; }
+        .compact-select { padding: 0.5rem; font-size: 0.9rem; }
+        
+        /* Filter Tube CSS */
+        .filter-tube {
+            width: 100%; max-width: 250px; margin: 0 auto;
+            border: 4px solid #9ca3af; border-radius: 10px;
+            background: #e5e7eb; position: relative;
+        }
+        .filter-tube::before {
+            content: '↓ AIR KOTOR MASUK ↓'; display: block; text-align: center;
+            font-weight: bold; color: #4b5563; padding: 10px 0; background: #93c5fd;
+        }
+        .filter-tube::after {
+            content: '↓ AIR BERSIH KELUAR ↓'; display: block; text-align: center;
+            font-weight: bold; color: #059669; padding: 10px 0; background: #a7f3d0;
+        }
     </style>
 </head>
 <body class="text-gray-800 h-screen flex flex-col">
@@ -41,10 +46,10 @@
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="text-center md:text-left">
                 <h1 class="text-2xl md:text-3xl font-bold"><i class="fas fa-graduation-cap mr-2"></i>Akademi Panca Cinta</h1>
-                <p class="text-green-200 text-sm md:text-base">Edisi Master</p>
+                <p class="text-green-200 text-sm md:text-base">Simulator Pemecahan Masalah Terpadu - Edisi Master</p>
             </div>
             <div class="flex gap-4 text-center">
-                <div class="bg-green-800 px-4 py-2 rounded-lg">
+                <div class="bg-green-800 px-4 py-2 rounded-lg shadow-inner">
                     <div class="text-xs text-green-300">Skor KBC</div>
                     <div class="font-bold text-xl" id="global-score">0 / 500</div>
                 </div>
@@ -85,23 +90,23 @@
 
                 <div class="space-y-3">
                     <h3 class="font-bold text-gray-700">Susun Urutan:</h3>
-                    <select id="m1-1" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none text-lg">
+                    <select id="m1-1" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none text-lg bg-white">
                         <option value="">-- Kegiatan 1 --</option>
                         <option value="mandi">Mandi</option><option value="belajar">Belajar</option><option value="bermain">Bermain</option><option value="olahraga">Olahraga</option><option value="tidur">Tidur Malam</option>
                     </select>
-                    <select id="m1-2" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none text-lg">
+                    <select id="m1-2" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none text-lg bg-white">
                         <option value="">-- Kegiatan 2 --</option>
                         <option value="mandi">Mandi</option><option value="belajar">Belajar</option><option value="bermain">Bermain</option><option value="olahraga">Olahraga</option><option value="tidur">Tidur Malam</option>
                     </select>
-                    <select id="m1-3" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none text-lg">
+                    <select id="m1-3" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none text-lg bg-white">
                         <option value="">-- Kegiatan 3 --</option>
                         <option value="mandi">Mandi</option><option value="belajar">Belajar</option><option value="bermain">Bermain</option><option value="olahraga">Olahraga</option><option value="tidur">Tidur Malam</option>
                     </select>
-                    <select id="m1-4" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none text-lg">
+                    <select id="m1-4" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none text-lg bg-white">
                         <option value="">-- Kegiatan 4 --</option>
                         <option value="mandi">Mandi</option><option value="belajar">Belajar</option><option value="bermain">Bermain</option><option value="olahraga">Olahraga</option><option value="tidur">Tidur Malam</option>
                     </select>
-                    <select id="m1-5" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none text-lg">
+                    <select id="m1-5" class="w-full p-3 rounded-lg border-2 border-gray-300 focus:border-green-500 focus:outline-none text-lg bg-white">
                         <option value="">-- Kegiatan 5 --</option>
                         <option value="mandi">Mandi</option><option value="belajar">Belajar</option><option value="bermain">Bermain</option><option value="olahraga">Olahraga</option><option value="tidur">Tidur Malam</option>
                     </select>
@@ -110,36 +115,62 @@
             </div>
         </section>
 
-        <!-- Misi 2: Cinta Tuhan -->
+        <!-- Misi 2: Cinta Tuhan (KOMPLEKS) -->
         <section id="misi-2" class="glass-panel rounded-2xl p-6 md:p-8 hidden-mission fade-in">
-            <h2 class="text-2xl font-bold text-indigo-700 mb-2 border-b-2 border-indigo-200 pb-2">Misi 2: Agen Tabayyun (Cinta Tuhan)</h2>
-            <p class="mb-4 text-gray-600">Agama mengajarkan kita untuk selalu mencari kebenaran (Tabayyun). Ada pesan berantai masuk ke grup kelas!</p>
+            <h2 class="text-2xl font-bold text-indigo-700 mb-2 border-b-2 border-indigo-200 pb-2">Misi 2: Investigator Moral (Cinta Tuhan)</h2>
+            <p class="mb-4 text-gray-600">Terjadi keributan! Uang kas kegiatan hilang. Seorang siswa menyebarkan desas-desus menuduh Budi (yang sedang kesulitan ekonomi) sebagai pencurinya karena hari itu Budi terlihat membawa banyak uang. Agama mengajarkan kita menjunjung tinggi keadilan, prasangka baik, dan <strong>Tabayyun</strong> (klarifikasi kebenaran).</p>
             
-            <div class="bg-gray-100 p-4 md:p-6 rounded-xl border-l-4 border-red-500 mb-6 font-mono text-sm md:text-base">
-                "AWAS!! Besok kiamat internet! Semua server mati. Cepat sebarkan pesan ini ke 10 grup atau HP kamu akan meledak! - Dari Prof. Anonim"
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gray-100 p-4 md:p-6 rounded-xl border-l-4 border-indigo-500 font-medium text-sm md:text-base text-gray-700">
+                    <p class="mb-2"><i class="fas fa-balance-scale text-indigo-500 mr-2"></i><strong>Tugasmu:</strong> Susun <strong>4 Langkah Prosedur Keadilan (SOP)</strong> secara berurutan untuk menyelesaikan masalah ini tanpa menyakiti perasaan orang tak bersalah dan tanpa menimbulkan fitnah di grup kelas.</p>
+                    <p class="text-xs text-red-500 mt-4 italic">*Awas jebakan! Jangan memilih tindakan yang emosional atau main hakim sendiri.</p>
+                </div>
 
-            <p class="font-bold text-gray-700 mb-3">Tugas: Pilih <strong>DUA</strong> tindakan paling tepat dan kritis menghadapi pesan ini!</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="m2-options">
-                <div class="check-item border-2 border-gray-200 rounded-lg p-4" onclick="toggleSelect(this, 'm2')">
-                    <span class="hidden-val">1</span>
-                    <i class="fas fa-share text-blue-500 mr-2 text-xl align-middle"></i> Langsung sebar, buat jaga-jaga siapa tahu benar.
-                </div>
-                <div class="check-item border-2 border-gray-200 rounded-lg p-4" onclick="toggleSelect(this, 'm2')">
-                    <span class="hidden-val">2</span>
-                    <i class="fas fa-search text-green-500 mr-2 text-xl align-middle"></i> Cek di Google berita resmi tentang kebenaran "Kiamat Internet".
-                </div>
-                <div class="check-item border-2 border-gray-200 rounded-lg p-4" onclick="toggleSelect(this, 'm2')">
-                    <span class="hidden-val">3</span>
-                    <i class="fas fa-comment-dots text-purple-500 mr-2 text-xl align-middle"></i> Abaikan pesan tersebut dan ingatkan pengirim secara pribadi.
-                </div>
-                <div class="check-item border-2 border-gray-200 rounded-lg p-4" onclick="toggleSelect(this, 'm2')">
-                    <span class="hidden-val">4</span>
-                    <i class="fas fa-angry text-orange-500 mr-2 text-xl align-middle"></i> Marah-marah di grup memaki orang yang mengirim pesan.
+                <div class="space-y-3">
+                    <h3 class="font-bold text-indigo-800">Susun 4 Langkah Resolusi:</h3>
+                    <select id="m2-1" class="w-full p-3 rounded border-2 border-indigo-200 focus:border-indigo-500 bg-white">
+                        <option value="">-- Langkah 1 --</option>
+                        <option value="trap1">Langsung menggeledah tas Budi di depan kelas</option>
+                        <option value="tahan">Menahan diri, tidak ikut menyebarkan gosip/tuduhan</option>
+                        <option value="trap2">Melaporkan Budi ke polisi agar cepat selesai</option>
+                        <option value="tabayyun">Mengajak Budi bicara 4 mata untuk meminta klarifikasi</option>
+                        <option value="fakta">Mengecek catatan kas dan rekaman CCTV (kumpulkan fakta)</option>
+                        <option value="damai">Menyelesaikan masalah secara damai dan menasihati penyebar fitnah</option>
+                    </select>
+                    
+                    <select id="m2-2" class="w-full p-3 rounded border-2 border-indigo-200 focus:border-indigo-500 bg-white">
+                        <option value="">-- Langkah 2 --</option>
+                        <option value="trap1">Langsung menggeledah tas Budi di depan kelas</option>
+                        <option value="tahan">Menahan diri, tidak ikut menyebarkan gosip/tuduhan</option>
+                        <option value="trap2">Melaporkan Budi ke polisi agar cepat selesai</option>
+                        <option value="tabayyun">Mengajak Budi bicara 4 mata untuk meminta klarifikasi</option>
+                        <option value="fakta">Mengecek catatan kas dan rekaman CCTV (kumpulkan fakta)</option>
+                        <option value="damai">Menyelesaikan masalah secara damai dan menasihati penyebar fitnah</option>
+                    </select>
+                    
+                    <select id="m2-3" class="w-full p-3 rounded border-2 border-indigo-200 focus:border-indigo-500 bg-white">
+                        <option value="">-- Langkah 3 --</option>
+                        <option value="trap1">Langsung menggeledah tas Budi di depan kelas</option>
+                        <option value="tahan">Menahan diri, tidak ikut menyebarkan gosip/tuduhan</option>
+                        <option value="trap2">Melaporkan Budi ke polisi agar cepat selesai</option>
+                        <option value="tabayyun">Mengajak Budi bicara 4 mata untuk meminta klarifikasi (Tabayyun)</option>
+                        <option value="fakta">Mengecek catatan kas dan rekaman CCTV (kumpulkan fakta)</option>
+                        <option value="damai">Menyelesaikan masalah secara damai dan menasihati penyebar fitnah</option>
+                    </select>
+
+                    <select id="m2-4" class="w-full p-3 rounded border-2 border-indigo-200 focus:border-indigo-500 bg-white">
+                        <option value="">-- Langkah 4 --</option>
+                        <option value="trap1">Langsung menggeledah tas Budi di depan kelas</option>
+                        <option value="tahan">Menahan diri, tidak ikut menyebarkan gosip/tuduhan</option>
+                        <option value="trap2">Melaporkan Budi ke polisi agar cepat selesai</option>
+                        <option value="tabayyun">Mengajak Budi bicara 4 mata untuk meminta klarifikasi</option>
+                        <option value="fakta">Mengecek catatan kas dan rekaman CCTV (kumpulkan fakta)</option>
+                        <option value="damai">Menasihati penyebar fitnah dan menyelesaikan konflik dengan memaafkan</option>
+                    </select>
+                    
+                    <button onclick="checkMisi2()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-lg">Terapkan Resolusi Moral</button>
                 </div>
             </div>
-            <button onclick="checkMisi2()" class="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-lg">Analisis Tindakan</button>
         </section>
 
         <!-- Misi 3: Cinta Sesama (10 Karakter) -->
@@ -170,7 +201,6 @@
                     <h3 class="font-bold text-gray-800 mb-2"><i class="fas fa-sitemap mr-2"></i>Penempatan Posisi:</h3>
                     
                     <div class="space-y-2 overflow-y-auto pr-2 max-h-[50vh] md:max-h-full">
-                        <!-- Posisi 1-5 -->
                         <div class="flex items-center gap-2">
                             <label class="w-24 md:w-32 font-semibold text-gray-700 text-xs md:text-sm text-right leading-tight">Ketua:</label>
                             <select id="pos-ketua" class="compact-select flex-1 rounded border border-gray-300 focus:border-orange-500 bg-gray-50"><option value="">- Pilih -</option></select>
@@ -191,7 +221,6 @@
                             <label class="w-24 md:w-32 font-semibold text-gray-700 text-xs md:text-sm text-right leading-tight">Perlengkapan:</label>
                             <select id="pos-logistik" class="compact-select flex-1 rounded border border-gray-300 focus:border-orange-500 bg-gray-50"><option value="">- Pilih -</option></select>
                         </div>
-                        <!-- Posisi 6-10 -->
                         <div class="flex items-center gap-2">
                             <label class="w-24 md:w-32 font-semibold text-gray-700 text-xs md:text-sm text-right leading-tight">Dokumentasi:</label>
                             <select id="pos-dokumentasi" class="compact-select flex-1 rounded border border-gray-300 focus:border-orange-500 bg-gray-50"><option value="">- Pilih -</option></select>
@@ -218,44 +247,52 @@
             </div>
         </section>
 
-        <!-- Misi 4: Cinta Alam -->
+        <!-- Misi 4: Cinta Alam (KOMPLEKS) -->
         <section id="misi-4" class="glass-panel rounded-2xl p-6 md:p-8 hidden-mission fade-in">
-            <h2 class="text-2xl font-bold text-emerald-700 mb-2 border-b-2 border-emerald-200 pb-2">Misi 4: Inovator Lingkungan (Cinta Alam)</h2>
-            <p class="mb-4 text-gray-600">Air di selokan sekolah keruh dan bau. Kamu ingin merakit alat <strong>"Filter Air Sederhana"</strong>. Pilih <strong>TIGA</strong> bahan utama yang benar-benar bisa menjernihkan air dari gudang barang bekas!</p>
+            <h2 class="text-2xl font-bold text-emerald-700 mb-2 border-b-2 border-emerald-200 pb-2">Misi 4: Rekayasa Ekologi (Cinta Alam)</h2>
+            <p class="mb-4 text-gray-600">Air di penampungan sangat kotor, berbau, dan bercampur lumpur tebal. Kamu harus merakit alat <strong>"Eco-Filter Berlapis"</strong>. Masukkan material ke dalam tabung penyaring dengan urutan yang benar secara ilmu fisika/kimia dasar.</p>
             
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4" id="m4-options">
-                <div class="check-item border-2 border-gray-200 rounded-lg p-3 md:p-4 text-center" onclick="toggleSelect(this, 'm4')">
-                    <span class="hidden-val">arang</span>
-                    <i class="fas fa-fire-extinguisher text-3xl md:text-4xl text-gray-800 mb-2 block"></i> Arang Aktif
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <h3 class="font-bold text-emerald-800 mb-4"><i class="fas fa-vial mr-2"></i>Susun Lapisan Tabung:</h3>
+                    <p class="text-xs text-gray-500 mb-4 italic">Logika: Kotoran besar disaring dulu di atas, lalu partikel sedang, lalu racun/bau diserap kimiawi, dan terakhir partikel sangat halus disaring sebelum air keluar.</p>
+                    
+                    <div class="space-y-2 relative">
+                        <select id="m4-1" class="w-full p-4 rounded font-bold border-2 border-emerald-300 bg-emerald-50 text-center">
+                            <option value="">-- [Lapisan 1: Paling Atas] --</option>
+                            <option value="pasir">Pasir Bersih</option><option value="arang">Arang Aktif</option><option value="kerikil">Batu Kerikil</option><option value="kapas">Kapas/Spons</option><option value="trap1">Tanah Liat</option><option value="trap2">Plastik Bekas</option>
+                        </select>
+                        <select id="m4-2" class="w-full p-4 rounded font-bold border-2 border-emerald-300 bg-emerald-50 text-center">
+                            <option value="">-- [Lapisan 2: Tengah Atas] --</option>
+                            <option value="pasir">Pasir Bersih</option><option value="arang">Arang Aktif</option><option value="kerikil">Batu Kerikil</option><option value="kapas">Kapas/Spons</option><option value="trap1">Tanah Liat</option><option value="trap2">Plastik Bekas</option>
+                        </select>
+                        <select id="m4-3" class="w-full p-4 rounded font-bold border-2 border-emerald-300 bg-emerald-50 text-center">
+                            <option value="">-- [Lapisan 3: Tengah Bawah] --</option>
+                            <option value="pasir">Pasir Bersih</option><option value="arang">Arang Aktif</option><option value="kerikil">Batu Kerikil</option><option value="kapas">Kapas/Spons</option><option value="trap1">Tanah Liat</option><option value="trap2">Plastik Bekas</option>
+                        </select>
+                        <select id="m4-4" class="w-full p-4 rounded font-bold border-2 border-emerald-300 bg-emerald-50 text-center">
+                            <option value="">-- [Lapisan 4: Paling Bawah] --</option>
+                            <option value="pasir">Pasir Bersih</option><option value="arang">Arang Aktif</option><option value="kerikil">Batu Kerikil</option><option value="kapas">Kapas/Spons</option><option value="trap1">Tanah Liat</option><option value="trap2">Plastik Bekas</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="check-item border-2 border-gray-200 rounded-lg p-3 md:p-4 text-center" onclick="toggleSelect(this, 'm4')">
-                    <span class="hidden-val">baterai</span>
-                    <i class="fas fa-battery-half text-3xl md:text-4xl text-red-600 mb-2 block"></i> Baterai Bekas
+
+                <div class="filter-tube p-4 flex flex-col gap-2">
+                    <div class="h-16 bg-gray-300 rounded border-2 border-dashed border-gray-500 flex items-center justify-center text-xs font-bold text-gray-500" id="preview-l1">Lapisan 1</div>
+                    <div class="h-16 bg-gray-300 rounded border-2 border-dashed border-gray-500 flex items-center justify-center text-xs font-bold text-gray-500" id="preview-l2">Lapisan 2</div>
+                    <div class="h-16 bg-gray-300 rounded border-2 border-dashed border-gray-500 flex items-center justify-center text-xs font-bold text-gray-500" id="preview-l3">Lapisan 3</div>
+                    <div class="h-16 bg-gray-300 rounded border-2 border-dashed border-gray-500 flex items-center justify-center text-xs font-bold text-gray-500" id="preview-l4">Lapisan 4</div>
                 </div>
-                <div class="check-item border-2 border-gray-200 rounded-lg p-3 md:p-4 text-center" onclick="toggleSelect(this, 'm4')">
-                    <span class="hidden-val">botol</span>
-                    <i class="fas fa-bottle-water text-3xl md:text-4xl text-blue-400 mb-2 block"></i> Botol Plastik
-                </div>
-                <div class="check-item border-2 border-gray-200 rounded-lg p-3 md:p-4 text-center" onclick="toggleSelect(this, 'm4')">
-                    <span class="hidden-val">plastik</span>
-                    <i class="fas fa-bag-shopping text-3xl md:text-4xl text-yellow-500 mb-2 block"></i> Kantong Kresek
-                </div>
-                <div class="check-item border-2 border-gray-200 rounded-lg p-3 md:p-4 text-center" onclick="toggleSelect(this, 'm4')">
-                    <span class="hidden-val">pasir</span>
-                    <i class="fas fa-mound text-3xl md:text-4xl text-yellow-700 mb-2 block"></i> Pasir & Kerikil
-                </div>
-                <div class="check-item border-2 border-gray-200 rounded-lg p-3 md:p-4 text-center" onclick="toggleSelect(this, 'm4')">
-                    <span class="hidden-val">sabun</span>
-                    <i class="fas fa-pump-soap text-3xl md:text-4xl text-pink-400 mb-2 block"></i> Sabun Cuci
-                </div>
+
             </div>
-            <button onclick="checkMisi4()" class="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-lg">Rakit Filter</button>
+            <button onclick="checkMisi4()" class="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-lg">Uji Coba Filter</button>
         </section>
 
         <!-- Misi 5: Cinta Bangsa (10 Levels) -->
         <section id="misi-5" class="glass-panel rounded-2xl p-6 md:p-8 hidden-mission fade-in">
             <h2 class="text-2xl font-bold text-red-700 mb-2 border-b-2 border-red-200 pb-2">Misi 5: Ahli Kriptografi (Cinta Bangsa)</h2>
-            <p class="mb-4 text-gray-600">Pahlawan nasional meninggalkan brankas berisi dokumen penting. Untuk membukanya, kamu harus memecahkan <strong>10 tahap sandi</strong> beruntun. Siapkan kertas coretanmu!</p>
+            <p class="mb-4 text-gray-600">Pahlawan nasional meninggalkan brankas berisi dokumen penting kenegaraan. Untuk membukanya, kamu harus memecahkan <strong>10 tahap sandi</strong> beruntun. Siapkan kertas coretanmu!</p>
             
             <div class="bg-gray-800 text-green-400 p-6 md:p-8 rounded-xl font-mono text-center shadow-inner relative overflow-hidden">
                 <div class="absolute top-2 left-3 text-xs font-bold bg-red-600 text-white px-2 py-1 rounded" id="cipher-level-display">Level 1 / 10</div>
@@ -290,7 +327,7 @@
     </main>
 
     <script>
-        // Population of Dropdowns for Mission 3
+        // Data Kandida Misi 3
         const m3Candidates = [
             {id: 'budi', name: 'Budi'}, {id: 'siti', name: 'Siti'}, {id: 'andi', name: 'Andi'},
             {id: 'rina', name: 'Rina'}, {id: 'doni', name: 'Doni'}, {id: 'maya', name: 'Maya'},
@@ -307,32 +344,51 @@
                     select.appendChild(option);
                 });
             });
+
+            // Add event listeners for Mission 4 live preview
+            document.querySelectorAll('select[id^="m4-"]').forEach(select => {
+                select.addEventListener('change', updateFilterPreview);
+            });
         };
+
+        function updateFilterPreview() {
+            const colors = {
+                'kerikil': {bg: '#cbd5e1', text: 'Batu Kerikil'},
+                'pasir': {bg: '#fcd34d', text: 'Pasir'},
+                'arang': {bg: '#374151', text: 'Arang Aktif', color: 'white'},
+                'kapas': {bg: '#f8fafc', text: 'Kapas'},
+                'trap1': {bg: '#78350f', text: 'Tanah Liat', color: 'white'},
+                'trap2': {bg: '#fca5a5', text: 'Plastik'},
+                '': {bg: '#d1d5db', text: 'Kosong'}
+            };
+
+            for(let i=1; i<=4; i++) {
+                const val = document.getElementById(`m4-${i}`).value;
+                const preview = document.getElementById(`preview-l${i}`);
+                preview.style.backgroundColor = colors[val].bg;
+                preview.style.color = colors[val].color || 'black';
+                preview.innerText = colors[val].text;
+            }
+        }
 
         // State Management
         let score = 0;
         const maxScore = 500;
         let completedMissions = { 1: false, 2: false, 3: false, 4: false, 5: false };
 
-        // Misi 5 (Kriptografi) Data - 10 Levels increasing difficulty
+        // Misi 5 (Kriptografi) Data - 10 Levels
         const ciphers = [
-            { text: "NFSEFLB", answer: "MERDEKA", hint: "Geser huruf maju +1 (A menjadi B)." }, // Level 1: Caesar +1
-            { text: "OZMBZRHKZ", answer: "PANCASILA", hint: "Geser huruf mundur -1 (B menjadi A)." }, // Level 2: Caesar -1
-            { text: "DJKPPGMC", answer: "BHINNEKA", hint: "Geser huruf maju +2 (A menjadi C)." }, // Level 3: Caesar +2
-            { text: "JRWRQJ", answer: "GOTONG", hint: "Geser huruf maju +3." }, // Level 4: Caesar +3 (Shortened to Gotong)
-            { text: "RMJCPYLQG", answer: "TOLERANSI", hint: "Geser huruf mundur -2." }, // Level 5: Caesar -2
-            { text: "KVIHZGFZM", answer: "PERSATUAN", hint: "Sandi Cermin/Atbash (A=Z, B=Y, C=X)." }, // Level 6: Atbash
-            { text: "NTRD", answer: "DEMI", hint: "Balik urutan hurufnya (Dibaca dari kanan ke kiri)." }, // Level 7: Reverse (IMED -> DEMI)
-            { text: "H A S G N A B", answer: "BANGSA", hint: "Balik urutannya dan abaikan spasi." }, // Level 8: Reverse with space
-            { text: "K C J W T K C", answer: "JAKARTA", hint: "Geser maju +2, lalu baca dari kanan ke kiri!" }, // Level 9: Caesar +2 AND Reverse. JAKARTA -> L C M C T V C -> C V T C M C L. Wait, let's simplify for 6th grade.
-            // Simplified Level 9 & 10
-            { text: "P A H L A W A N", answer: "NAWALHAP", hint: "Ketik terbalik dari kata 'PAHLAWAN'." }, // Level 9: Reverse typing
-            { text: "14-5-7-1-18-1", answer: "NEGARA", hint: "Angka adalah urutan alfabet (A=1, B=2, Z=26)." } // Level 10: A1Z26
+            { text: "NFSEFLB", answer: "MERDEKA", hint: "Geser huruf maju +1 (A menjadi B)." }, 
+            { text: "OZMBZRHKZ", answer: "PANCASILA", hint: "Geser huruf mundur -1 (B menjadi A)." },
+            { text: "DJKPPGMC", answer: "BHINNEKA", hint: "Geser huruf maju +2 (A menjadi C)." }, 
+            { text: "JRWRQJ", answer: "GOTONG", hint: "Geser huruf maju +3." }, 
+            { text: "RMJCPYLQG", answer: "TOLERANSI", hint: "Geser huruf mundur -2." }, 
+            { text: "KVIHZGFZM", answer: "PERSATUAN", hint: "Sandi Cermin/Atbash (A=Z, B=Y, C=X)." }, 
+            { text: "NTRD", answer: "DEMI", hint: "Balik urutan hurufnya (Dibaca dari kanan ke kiri)." }, 
+            { text: "H A S G N A B", answer: "BANGSA", hint: "Balik urutannya dan abaikan spasi." }, 
+            { text: "BALIK KATA: PAHLAWAN", answer: "NAWALHAP", hint: "Tulis kata PAHLAWAN dari belakang." }, 
+            { text: "14-5-7-1-18-1", answer: "NEGARA", hint: "Angka adalah urutan alfabet (A=1, B=2, Z=26)." } 
         ];
-        
-        // Fix for Level 9 to make sense: Answer is NAWALHAP, text is "Balik kata PAHLAWAN"
-        ciphers[8] = { text: "BALIK KATA: PAHLAWAN", answer: "NAWALHAP", hint: "Tulis kata PAHLAWAN dari belakang." };
-
         let currentCipherLevel = 0;
 
         // UI Functions
@@ -350,30 +406,12 @@
             box.className = `mb-4 p-4 rounded-lg font-bold text-center transition-all shadow-md z-50 sticky top-20 fade-in ${isSuccess ? 'bg-green-100 text-green-800 border-2 border-green-400' : 'bg-red-100 text-red-800 border-2 border-red-400'}`;
             box.innerHTML = isSuccess ? `<i class="fas fa-check-circle mr-2 text-xl align-middle"></i> ${msg}` : `<i class="fas fa-exclamation-triangle mr-2 text-xl align-middle"></i> ${msg}`;
             box.style.display = 'block';
-            
-            // Auto scroll to top to see alert on mobile
             window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            if(isSuccess) setTimeout(hideAlert, 4000);
+            if(isSuccess) setTimeout(hideAlert, 5000);
         }
 
         function hideAlert() {
             document.getElementById('alert-box').style.display = 'none';
-        }
-
-        function toggleSelect(elem, mission) {
-            const currentSelected = document.querySelectorAll(`#${mission}-options .selected`).length;
-            const maxAllowed = mission === 'm2' ? 2 : 3;
-
-            if (elem.classList.contains('selected')) {
-                elem.classList.remove('selected');
-            } else {
-                if (currentSelected < maxAllowed) {
-                    elem.classList.add('selected');
-                } else {
-                    showAlert(`Maksimal hanya ${maxAllowed} pilihan! Batalkan pilihan lain dulu.`, false);
-                }
-            }
         }
 
         function updateScore(points, missionId) {
@@ -412,15 +450,12 @@
 
         function checkMisi1() {
             if(completedMissions[1]) return showAlert("Misi ini sudah diselesaikan!", true);
-            
             const v = [
                 document.getElementById('m1-1').value, document.getElementById('m1-2').value,
                 document.getElementById('m1-3').value, document.getElementById('m1-4').value,
                 document.getElementById('m1-5').value
             ];
-
             if(v.includes("")) return showAlert("Ada jadwal yang masih kosong!", false);
-
             if (v[0] === 'olahraga' && v[1] === 'mandi' && v[2] === 'belajar' && v[3] === 'bermain' && v[4] === 'tidur') {
                 showAlert("Tepat Sekali! Rutinitas yang sehat dan seimbang.", true);
                 updateScore(100, 1);
@@ -431,16 +466,27 @@
 
         function checkMisi2() {
             if(completedMissions[2]) return showAlert("Misi ini sudah diselesaikan!", true);
-
-            const selected = Array.from(document.querySelectorAll('#m2-options .selected')).map(el => el.querySelector('.hidden-val').innerText);
             
-            if (selected.length !== 2) return showAlert("Pilih tepat DUA tindakan!", false);
+            const v = [
+                document.getElementById('m2-1').value, document.getElementById('m2-2').value,
+                document.getElementById('m2-3').value, document.getElementById('m2-4').value
+            ];
 
-            if (selected.includes("2") && selected.includes("3")) {
-                showAlert("Sangat Bijak! Tabayyun (Cek Google) dan mengingatkan pengirim tanpa ribut di grup.", true);
+            if(v.includes("")) return showAlert("Semua 4 langkah prosedur harus diisi!", false);
+
+            const uniqueSteps = new Set(v);
+            if (uniqueSteps.size !== 4) return showAlert("Tidak boleh ada langkah yang diulang!", false);
+
+            if(v.includes("trap1") || v.includes("trap2")) {
+                return showAlert("Tindakanmu melanggar azas praduga tak bersalah. Jangan main hakim sendiri atau gegabah lapor polisi sebelum ada bukti!", false);
+            }
+
+            // Correct Sequence: 1. Tahan 2. Fakta 3. Tabayyun 4. Damai
+            if (v[0] === 'tahan' && v[1] === 'fakta' && v[2] === 'tabayyun' && v[3] === 'damai') {
+                showAlert("Sangat Bijaksana! Kamu menguasai prinsip Tabayyun: Menahan emosi, mencari data objektif, klarifikasi empat mata, dan menyelesaikan secara damai.", true);
                 updateScore(100, 2);
             } else {
-                showAlert("Pilihanmu kurang tepat atau berpotensi membuat suasana makin keruh. Coba lagi!", false);
+                showAlert("Urutan prosedurmu belum sempurna. Ingat: Kendalikan diri dulu -> Cari bukti fisik -> Klarifikasi -> Penyelesaian damai.", false);
             }
         }
 
@@ -460,10 +506,6 @@
             const uniqueAssigned = new Set(pos);
             if (uniqueAssigned.size !== 10) return showAlert("Ada siswa yang merangkap jabatan! 1 orang hanya boleh di 1 posisi.", false);
 
-            // Correct Mapping
-            // ketua: budi, sekre: siti, benda: andi, humas: rina, logis: doni
-            // dokum: maya, konsumsi: joko, dekor: tari, tekni: eko, acara: lia
-            
             const correctPos = ['budi', 'siti', 'andi', 'rina', 'doni', 'maya', 'joko', 'tari', 'eko', 'lia'];
             let isCorrect = true;
             let wrongCount = 0;
@@ -486,15 +528,25 @@
         function checkMisi4() {
             if(completedMissions[4]) return showAlert("Misi ini sudah diselesaikan!", true);
 
-            const selected = Array.from(document.querySelectorAll('#m4-options .selected')).map(el => el.querySelector('.hidden-val').innerText);
-            
-            if (selected.length !== 3) return showAlert("Pilih TIGA bahan!", false);
+            const v = [
+                document.getElementById('m4-1').value, document.getElementById('m4-2').value,
+                document.getElementById('m4-3').value, document.getElementById('m4-4').value
+            ];
 
-            if (selected.includes("arang") && selected.includes("botol") && selected.includes("pasir")) {
-                showAlert("Kreatif! Botol (wadah), Arang (penyerap racun), Pasir (penyaring). Inovasi yang bagus!", true);
+            if(v.includes("")) return showAlert("Isi penuh tabung filter airmu dengan 4 material!", false);
+            const uniqueLayers = new Set(v);
+            if (uniqueLayers.size !== 4) return showAlert("Gunakan 4 material berbeda untuk efisiensi maksimal!", false);
+
+            if(v.includes("trap1") || v.includes("trap2")) {
+                return showAlert("AWAS! Memasukkan Tanah Liat atau Plastik justru akan membuat air tersumbat atau semakin kotor.", false);
+            }
+
+            // Correct filtration logic: Kerikil (Top, blocks large debris) -> Pasir (Mid, blocks mud) -> Arang (Mid-low, absorbs chemicals) -> Kapas (Bottom, final micro filter)
+            if (v[0] === 'kerikil' && v[1] === 'pasir' && v[2] === 'arang' && v[3] === 'kapas') {
+                showAlert("Ilmuwan Brilian! Susunan filtrasimu benar: Kerikil menahan kotoran besar, pasir menahan lumpur, arang menyerap racun kimia, dan kapas menjadi saringan terakhir yang menghasilkan air jernih.", true);
                 updateScore(100, 4);
             } else {
-                showAlert("Ada bahan berbahaya atau tidak berguna yang kamu pilih.", false);
+                showAlert("Sistem gagal bekerja. Lapisan tidak berurutan. Ingat prinsipnya: Saring kotoran terbesar di atas, hingga partikel terhalus dan kimia di bawah.", false);
             }
         }
 
@@ -511,20 +563,17 @@
                 
                 currentCipherLevel++;
                 
-                // Update Progress bar (10 levels)
                 const progressPercentage = (currentCipherLevel / 10) * 100;
                 document.getElementById('cipher-bar').style.width = `${progressPercentage}%`;
                 document.getElementById('cipher-percent').innerText = `${progressPercentage}%`;
 
                 if (currentCipherLevel < 10) {
-                    // Flash effect for correct answer
                     inputEl.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
                     setTimeout(() => inputEl.classList.remove('bg-green-100', 'border-green-500', 'text-green-800'), 500);
 
                     showAlert(`AKSES DITERIMA! Level ${currentCipherLevel} selesai. Lanjut!`, true);
                     inputEl.value = "";
                     
-                    // UI for next cipher
                     setTimeout(() => {
                         document.getElementById('cipher-level-display').innerText = `Level ${currentCipherLevel + 1} / 10`;
                         document.getElementById('cipher-text').innerText = ciphers[currentCipherLevel].text;
@@ -532,7 +581,6 @@
                         inputEl.focus();
                     }, 1000);
                 } else {
-                    // Won mission 5
                     document.getElementById('cipher-text').innerText = "INDONESIA RAYA";
                     document.getElementById('cipher-text').classList.add('text-yellow-400', 'drop-shadow-lg');
                     document.getElementById('cipher-hint').innerText = "BRANKAS TERBUKA!";
@@ -540,7 +588,6 @@
                     updateScore(100, 5);
                 }
             } else {
-                // Shake effect for wrong answer
                 inputEl.classList.add('translate-x-2');
                 setTimeout(() => inputEl.classList.replace('translate-x-2', '-translate-x-2'), 100);
                 setTimeout(() => inputEl.classList.replace('-translate-x-2', 'translate-x-2'), 200);
