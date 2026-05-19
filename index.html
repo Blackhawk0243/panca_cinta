@@ -289,7 +289,7 @@
             <button onclick="checkMisi4()" class="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-lg">Uji Coba Filter</button>
         </section>
 
-        <!-- Misi 5: Cinta Bangsa (DIREVISI 100% AKURAT) -->
+        <!-- Misi 5: Cinta Bangsa (LOGIKA KRIPTOGRAFI DIPERBAIKI) -->
         <section id="misi-5" class="glass-panel rounded-2xl p-6 md:p-8 hidden-mission fade-in">
             <h2 class="text-2xl font-bold text-red-700 mb-2 border-b-2 border-red-200 pb-2">Misi 5: Ahli Kriptografi (Cinta Bangsa)</h2>
             <p class="mb-4 text-gray-600">Pahlawan nasional meninggalkan brankas berisi dokumen penting kenegaraan. Untuk membukanya, kamu harus memecahkan <strong>10 tahap sandi</strong> beruntun. Siapkan kertas coretanmu!</p>
@@ -299,11 +299,11 @@
                 <p class="text-gray-400 text-sm mb-2 mt-4">KODE TERENKRIPSI:</p>
                 
                 <div id="cipher-text" class="text-2xl md:text-4xl font-bold tracking-widest md:tracking-[0.3em] mb-4 text-white drop-shadow-[0_0_10px_rgba(34,197,94,0.8)] break-words">
-                    NFSEFLB
+                    LDQCDJZ
                 </div>
                 
                 <div id="cipher-hint" class="text-yellow-400 text-xs md:text-sm mt-4 bg-gray-700 inline-block px-4 py-2 rounded-lg border border-gray-600">
-                    <i class="fas fa-search mr-1"></i> Petunjuk: Geser huruf maju +1 (A menjadi B).
+                    <i class="fas fa-search mr-1"></i> Petunjuk: Geser huruf pada kode maju +1 langkah (L menjadi M).
                 </div>
             </div>
 
@@ -327,7 +327,7 @@
     </main>
 
     <script>
-        // Data Kandida Misi 3
+        // Data Kandidat Misi 3
         const m3Candidates = [
             {id: 'budi', name: 'Budi'}, {id: 'siti', name: 'Siti'}, {id: 'andi', name: 'Andi'},
             {id: 'rina', name: 'Rina'}, {id: 'doni', name: 'Doni'}, {id: 'maya', name: 'Maya'},
@@ -376,16 +376,24 @@
         const maxScore = 500;
         let completedMissions = { 1: false, 2: false, 3: false, 4: false, 5: false };
 
-        // Misi 5 (Kriptografi) Data - 10 Levels (100% CORRECTED)
+        // Misi 5 (Kriptografi) Data - LOGIKA DIPERBAIKI (Tindakan pada kode = Jawaban)
         const ciphers = [
-            { text: "NFSEFLB", answer: "MERDEKA", hint: "Geser huruf maju +1 (A menjadi B)." }, 
-            { text: "OZMBZRHKZ", answer: "PANCASILA", hint: "Geser huruf mundur -1 (B menjadi A)." },
-            { text: "DJKPPGMC", answer: "BHINNEKA", hint: "Geser huruf maju +2 (A menjadi C)." }, 
-            { text: "JRWRQJ", answer: "GOTONG", hint: "Geser huruf maju +3 (A menjadi D)." }, 
-            { text: "RMJCPYLQG", answer: "TOLERANSI", hint: "Geser huruf mundur -2 (C menjadi A)." }, 
+            // Jawaban MERDEKA. Petunjuk: Maju +1. Maka kode aslinya harus mundur -1 dari MERDEKA (M-1=L, E-1=D, dst).
+            { text: "LDQCDJZ", answer: "MERDEKA", hint: "Geser huruf pada kode maju +1 langkah (L menjadi M)." }, 
+            // Jawaban PANCASILA. Petunjuk: Mundur -1. Maka kode aslinya harus maju +1 dari PANCASILA (P+1=Q, A+1=B, dst).
+            { text: "QBODBTJMB", answer: "PANCASILA", hint: "Geser huruf pada kode mundur -1 langkah (B menjadi A)." },
+            // Jawaban BHINNEKA. Petunjuk: Maju +2. Maka kode aslinya mundur -2.
+            { text: "ZFGLCJIY", answer: "BHINNEKA", hint: "Geser huruf pada kode maju +2 langkah (Z menjadi B)." }, 
+            // Jawaban GOTONG. Petunjuk: Maju +3. Kode asli mundur -3.
+            { text: "DLQLKD", answer: "GOTONG", hint: "Geser huruf pada kode maju +3 langkah (D menjadi G)." }, 
+            // Jawaban TOLERANSI. Petunjuk: Mundur -2. Kode asli maju +2.
+            { text: "VQNGTCPUK", answer: "TOLERANSI", hint: "Geser huruf pada kode mundur -2 langkah (V menjadi T)." }, 
+            // Jawaban PERSATUAN. Atbash Cermin (A=Z, B=Y, dst).
             { text: "KVIHZGFZM", answer: "PERSATUAN", hint: "Sandi Cermin/Atbash (A=Z, B=Y, C=X, dst)." }, 
-            { text: "A R E D N E B", answer: "BENDERA", hint: "Sandi ini hanya dibalik urutannya. Baca dari kanan ke kiri!" }, 
+            // Reverse / Balik Kata
+            { text: "A R E D N E B", answer: "BENDERA", hint: "Sandi ini hanya dibalik urutannya. Baca huruf dari kanan ke kiri!" }, 
             { text: "I S A M A L K O R P", answer: "PROKLAMASI", hint: "Sama seperti level sebelumnya, baca dari belakang!" }, 
+            // A1Z26 Angka ke Huruf
             { text: "16-1-8-12-1-23-1-14", answer: "PAHLAWAN", hint: "Sandi Angka: A=1, B=2, C=3, dan seterusnya hingga Z=26." }, 
             { text: "14-5-7-1-18-1", answer: "NEGARA", hint: "Sandi Angka: A=1, B=2, C=3, dan seterusnya hingga Z=26." } 
         ];
